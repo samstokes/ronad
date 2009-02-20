@@ -1,8 +1,0 @@
-h1. ronad
-
-An ill-advised exploration of monads in Ruby.
-
-h2. Influences
-
-* "Monads in 15 minutes":http://www.randomhacks.net/articles/2007/03/12/monads-in-15-minutes by Eric Kidd
-* "andand":http://andand.rubyforge.org/ by "raganwald":http://github.com/raganwald/homoiconic

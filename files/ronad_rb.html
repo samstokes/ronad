@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: ronad.rb</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>ronad.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>ronad.rb
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Fri Feb 20 00:30:38 +0000 2009</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <pre>
+  STAGE 1 ###
+</pre>
+<p>
+Simplistic translations of the definitions in <a
+href="http://www.randomhacks.net/articles/2007/03/12/monads-in-15-minutes">www.randomhacks.net/articles/2007/03/12/monads-in-15-minutes</a>
+of the three monad functions return, map and join for the <a
+href="../classes/Maybe.html">Maybe</a> monad
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000006">choose</a>&nbsp;&nbsp;
+      <a href="#M000007">guard</a>&nbsp;&nbsp;
+      <a href="#M000004">joinMaybe</a>&nbsp;&nbsp;
+      <a href="#M000002">mapMaybe</a>&nbsp;&nbsp;
+      <a href="#M000003">mapMaybe2</a>&nbsp;&nbsp;
+      <a href="#M000005">maybeFLO</a>&nbsp;&nbsp;
+      <a href="#M000001">returnMaybe</a>&nbsp;&nbsp;
+      <a href="#M000008">such_that</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000006.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000006.html');return false;">
+          <span class="method-name">choose</span><span class="method-args">(xs)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000007" class="method-detail">
+        <a name="M000007"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000007.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000007.html');return false;">
+          <span class="method-name">guard</span><span class="method-args">(*args, &amp;block)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000004.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000004.html');return false;">
+          <span class="method-name">joinMaybe</span><span class="method-args">(mm)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<a href="../classes/Maybe.html">Maybe</a> (<a
+href="../classes/Maybe.html">Maybe</a> a) -&gt; <a
+href="../classes/Maybe.html">Maybe</a> a
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000002" class="method-detail">
+        <a name="M000002"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000002.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000002.html');return false;">
+          <span class="method-name">mapMaybe</span><span class="method-args">(f, m)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+((a -&gt; b), <a href="../classes/Maybe.html">Maybe</a> a) -&gt; <a
+href="../classes/Maybe.html">Maybe</a> b
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000003" class="method-detail">
+        <a name="M000003"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000003.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000003.html');return false;">
+          <span class="method-name">mapMaybe2</span><span class="method-args">(m) {|m| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+(<a href="../classes/Maybe.html">Maybe</a> a, &amp;(a -&gt; b)) -&gt; <a
+href="../classes/Maybe.html">Maybe</a> b
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000005.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000005.html');return false;">
+          <span class="method-name">maybeFLO</span><span class="method-args">(xs)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Use the <a href="../classes/Maybe.html">Maybe</a> monad to calculate an
+expression like xs.first.last.first returning nil if any intermediate
+result is nil. Equivalent to xs.andand.first.andand.last.andand.first
+</p>
+<p>
+Syntax clearly needs a bit of work&#8230;
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000001" class="method-detail">
+        <a name="M000001"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000001.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000001.html');return false;">
+          <span class="method-name">returnMaybe</span><span class="method-args">(x)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+a -&gt; <a href="../classes/Maybe.html">Maybe</a> a
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000008" class="method-detail">
+        <a name="M000008"></a>
+
+        <div class="method-heading">
+          <a href="ronad_rb.src/M000008.html" target="Code" class="method-signature"
+            onclick="popupCode('ronad_rb.src/M000008.html');return false;">
+          <span class="method-name">such_that</span><span class="method-args">(xs, ys, &amp;block)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+e.g. <a href="ronad_rb.html#M000008">such_that</a>([1, 2, 3], [4, 5, 6])
+{|x, y| x * y == 8 } =&gt; [[2, 4]]
+</p>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
