@@ -36,10 +36,19 @@ def joinMaybe(mm)
 end
 
 
+class Monad
+  class << self
+    def bind(choices, &block)
+      join(map(choices, &block))
+    end
+  end
+end
+
+
 ### STAGE 2 ###
 # First attempt at a Ruby-like encapsulation of the Maybe monad functions
 
-module Maybe
+class Maybe < Monad
   class << self
     def return(x)
       x
@@ -75,14 +84,14 @@ end
 # Syntax clearly needs a bit of work...
 def maybeFLO(xs)
   Maybe.class_eval do
-    join(map(xs) do |ys|
-      join(map(ys.first) do |zs|
-        join(map(zs.last) do |qs|
+    bind(xs) do |ys|
+      bind(ys.first) do |zs|
+        bind(zs.last) do |qs|
           raise "Not only child!" unless qs.length == 1
           self[qs.first]
-        end)
-      end)
-    end)
+        end
+      end
+    end
   end
 end
 
@@ -99,7 +108,7 @@ class Array
   end
 end
 
-module Choice
+class Choice < Monad
   class << self
     def return(x)
       [x]
@@ -138,24 +147,24 @@ end
 # such that x * y == 8
 
 Choice.class_eval do
-  join(map(choose([1, 2, 3])) do |x|
-    join(map(choose([4, 5, 6])) do |y|
-      join(map(guard(x, y) {|a, b| a * b == 8 }) do |_|
+  bind(choose([1, 2, 3])) do |x|
+    bind(choose([4, 5, 6])) do |y|
+      bind(guard(x, y) {|a, b| a * b == 8 }) do |_|
         self[[x, y]]
-      end)
-    end)
-  end)
+      end
+    end
+  end
 end
 
 # e.g. such_that([1, 2, 3], [4, 5, 6]) {|x, y| x * y == 8 } => [[2, 4]]
 def such_that(xs, ys, &block)
   Choice.class_eval do
-    join(map(choose(xs)) do |x|
-      join(map(choose(ys)) do |y|
-        join(map(guard(x, y, &block)) do |_|
+    bind(choose(xs)) do |x|
+      bind(choose(ys)) do |y|
+        bind(guard(x, y, &block)) do |_|
           self[[x, y]]
-        end)
-      end)
-    end)
+        end
+      end
+    end
   end
 end
