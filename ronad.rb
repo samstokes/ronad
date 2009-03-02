@@ -124,8 +124,8 @@ class Choice
   end
 end
 
-def guard(*args, &block)
-  if !block_given? || block.call(args)
+def guard(proc)
+  if proc.call
     return Choice[nil]
   else
     Choice.zero
@@ -139,7 +139,7 @@ end
 
 Choice[1, 2, 3].bind do |x|
   Choice[4, 5, 6].bind do |y|
-    (guard(x, y) {|a, b| a * b == 8 }).bind do |_|
+    guard(lambda { x * y == 8 }).bind do |_|
       Choice[[x, y]]
     end
   end
@@ -149,7 +149,7 @@ end.them
 def such_that(xs, ys, &block)
   Choice.new(xs).bind do |x|
     Choice.new(ys).bind do |y|
-      guard(x, y, &block).bind do |_|
+      guard(lambda { block.call(x, y) }).bind do |_|
         Choice[[x, y]]
       end
     end
