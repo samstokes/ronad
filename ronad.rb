@@ -46,7 +46,7 @@ end
 ### STAGE 2 ###
 # First attempt at a Ruby-like encapsulation of the Maybe monad functions
 
-class Maybe
+module Maybe
   class << self
     def [](val)
       val ? Something.new(val) : Nothing
@@ -54,28 +54,28 @@ class Maybe
 
     def zero; Nothing; end
   end
-end
 
-class NothingClass
-  include Monad
+  class NothingClass
+    include Monad
 
-  def initialize(); end
-  def map; self; end
-  def join; self; end
-  def it; nil; end
-end
-Nothing = NothingClass.new
-
-class Something
-  include Monad
-
-  class << self; alias :[] :new; end
-  attr_reader :it
-  def initialize(val)
-    @it = val
+    def initialize(); end
+    def map; self; end
+    def join; self; end
+    def it; nil; end
   end
-  def map; Something[yield(@it)]; end
-  def join; @it; end
+  Nothing = NothingClass.new
+
+  class Something
+    include Monad
+
+    class << self; alias :[] :new; end
+    attr_reader :it
+    def initialize(val)
+      @it = val
+    end
+    def map; Something[yield(@it)]; end
+    def join; @it; end
+  end
 end
 
 
