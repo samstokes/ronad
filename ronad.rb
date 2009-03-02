@@ -87,13 +87,11 @@ end
 # Syntax clearly needs a bit of work...
 def maybeFLO(xs)
   Maybe[xs].bind do |ys|
-    Maybe[ys.first].bind do |zs|
-      Maybe[zs.last].bind do |qs|
-        raise "Not only child!" unless qs.length == 1
-        Maybe[qs.first]
-      end
-    end
-  end.it
+  Maybe[ys.first].bind do |zs|
+  Maybe[zs.last].bind do |qs|
+  raise "Not only child!" unless qs.length == 1
+  Maybe[qs.first]
+  end end end.it
 end
 
 
@@ -124,12 +122,14 @@ class Choice
   end
 end
 
-def guard(proc)
-  if proc.call
-    return Choice[nil]
-  else
-    Choice.zero
-  end
+def guard(pred, &block)
+  (
+   if pred.call
+     Choice[nil]
+   else
+     Choice.zero
+   end
+  ).bind(&block)
 end
 
 # the backtracking search example given: find numbers
@@ -137,21 +137,30 @@ end
 # y in [4, 5, 6]
 # such that x * y == 8
 
-Choice[1, 2, 3].bind do |x|
-  Choice[4, 5, 6].bind do |y|
-    guard(lambda { x * y == 8 }).bind do |_|
-      Choice[[x, y]]
-    end
+module Enumerable
+  def choose(&block)
+    Choice.new(self).bind(&block)
   end
-end.them
+end
+
+(1..3).choose do |x|
+(4..6).choose do |y|
+guard lambda { x * y == 8 } do |_|
+Choice[[x, y]]
+end end end.them
+
+String.instance_methods.choose do |m|
+guard lambda { begin; "FOO".send(m); true; rescue; false; end } do |_|
+guard lambda { "FOO".send(m) == "foo" } do |_|
+guard lambda { x = "FOO"; x.send(m); x == "FOO" } do |_|
+Choice[m]
+end end end end.them
 
 # e.g. such_that([1, 2, 3], [4, 5, 6]) {|x, y| x * y == 8 } => [[2, 4]]
 def such_that(xs, ys, &block)
-  Choice.new(xs).bind do |x|
-    Choice.new(ys).bind do |y|
-      guard(lambda { block.call(x, y) }).bind do |_|
-        Choice[[x, y]]
-      end
-    end
-  end.them
+  xs.choose do |x|
+  ys.choose do |y|
+  guard lambda { block.call(x, y) } do |_|
+  Choice[[x, y]]
+  end end end.them
 end
