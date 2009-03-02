@@ -36,11 +36,9 @@ def joinMaybe(mm)
 end
 
 
-class Monad
-  class << self
-    def bind(choices, &block)
-      join(map(choices, &block))
-    end
+module Monad
+  def bind(&block)
+    map(&block).join
   end
 end
 
@@ -48,31 +46,36 @@ end
 ### STAGE 2 ###
 # First attempt at a Ruby-like encapsulation of the Maybe monad functions
 
-class Maybe < Monad
+class Maybe
   class << self
-    def return(x)
-      x
+    def [](val)
+      val ? Something.new(val) : Nothing
     end
 
-    # so that Maybe[3] is a Maybe
-    alias :[] :return
-
-    def map(m)
-      if m.nil?
-        nil
-      else
-        yield m
-      end
-    end
-
-    def join(mm)
-      if mm.nil?
-        nil
-      else
-        mm
-      end
-    end
+    def zero; Nothing; end
   end
+end
+
+class NothingClass
+  include Monad
+
+  def initialize(); end
+  def map; self; end
+  def join; self; end
+  def it; nil; end
+end
+Nothing = NothingClass.new
+
+class Something
+  include Monad
+
+  class << self; alias :[] :new; end
+  attr_reader :it
+  def initialize(val)
+    @it = val
+  end
+  def map; Something[yield(@it)]; end
+  def join; @it; end
 end
 
 
@@ -83,59 +86,47 @@ end
 #
 # Syntax clearly needs a bit of work...
 def maybeFLO(xs)
-  Maybe.class_eval do
-    bind(xs) do |ys|
-      bind(ys.first) do |zs|
-        bind(zs.last) do |qs|
-          raise "Not only child!" unless qs.length == 1
-          self[qs.first]
-        end
+  Maybe[xs].bind do |ys|
+    Maybe[ys.first].bind do |zs|
+      Maybe[zs.last].bind do |qs|
+        raise "Not only child!" unless qs.length == 1
+        Maybe[qs.first]
       end
     end
-  end
+  end.it
 end
 
 
 ### STAGE 3 ###
 # Implementation of the Choice monad and backtracking from the same article
 
-class Array
-  # mimic Haskell's 'concat' for lists
-  # like Array#flatten but only flattens one level
-  # e.g. [[1, 2, 3], [4, [5, 6]]].crunch => [1, 2, 3, 4, [5, 6]]
-  def crunch
-    inject([]) {|some, more| some + more }
-  end
-end
+class Choice
+  include Monad
 
-class Choice < Monad
   class << self
-    def return(x)
-      [x]
-    end
-    alias :[] :return
+    def [](*choices); new(choices); end
 
-    def map(choices, &f)
-      choices.map(&f)
-    end
-
-    def join(choices_of_choices)
-      choices_of_choices.crunch
-    end
-
-    def zero
-      []
-    end
+    def zero; self[]; end
   end
-end
 
-def choose(xs)
-  xs
+  def initialize(choices)
+    @them = choices
+  end
+
+  attr_reader :them
+
+  def map(&f)
+    Choice.new(@them.map(&f))
+  end
+
+  def join
+    Choice.new(@them.inject([]) {|some, more| some + more.them })
+  end
 end
 
 def guard(*args, &block)
   if !block_given? || block.call(args)
-    return [nil]
+    return Choice[nil]
   else
     Choice.zero
   end
@@ -146,25 +137,21 @@ end
 # y in [4, 5, 6]
 # such that x * y == 8
 
-Choice.class_eval do
-  bind(choose([1, 2, 3])) do |x|
-    bind(choose([4, 5, 6])) do |y|
-      bind(guard(x, y) {|a, b| a * b == 8 }) do |_|
-        self[[x, y]]
-      end
+Choice[1, 2, 3].bind do |x|
+  Choice[4, 5, 6].bind do |y|
+    (guard(x, y) {|a, b| a * b == 8 }).bind do |_|
+      Choice[[x, y]]
     end
   end
-end
+end.them
 
 # e.g. such_that([1, 2, 3], [4, 5, 6]) {|x, y| x * y == 8 } => [[2, 4]]
 def such_that(xs, ys, &block)
-  Choice.class_eval do
-    bind(choose(xs)) do |x|
-      bind(choose(ys)) do |y|
-        bind(guard(x, y, &block)) do |_|
-          self[[x, y]]
-        end
+  Choice.new(xs).bind do |x|
+    Choice.new(ys).bind do |y|
+      guard(x, y, &block).bind do |_|
+        Choice[[x, y]]
       end
     end
-  end
+  end.them
 end
