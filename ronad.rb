@@ -94,6 +94,15 @@ def maybeFLO(xs)
   end end end.it
 end
 
+def maybeFLO2(xs)
+             Maybe[xs].
+  bind {|ys| Maybe[ys.first] }.
+  bind {|zs| Maybe[zs.last] }.
+  bind {|qs| raise "Not only child!" unless qs.length == 1
+             Maybe[qs.first] }.
+  it
+end
+
 
 ### STAGE 3 ###
 # Implementation of the Choice monad and backtracking from the same article
@@ -123,13 +132,16 @@ class Choice
 end
 
 def guard(pred, &block)
-  (
-   if pred.call
-     Choice[nil]
-   else
-     Choice.zero
-   end
-  ).bind(&block)
+  choice = if pred.call
+             Choice[nil]
+           else
+             Choice.zero
+           end
+  if block_given?
+    choice.bind(&block)
+  else
+    choice
+  end
 end
 
 # the backtracking search example given: find numbers
@@ -155,6 +167,13 @@ guard lambda { "FOO".send(m) == "foo" } do |_|
 guard lambda { x = "FOO"; x.send(m); x == "FOO" } do |_|
 Choice[m]
 end end end end.them
+
+String.instance_methods.choose do |m|
+          guard(lambda { begin; "FOO".send(m); true; rescue; false; end }).
+bind {|_| guard lambda { "FOO".send(m) == "foo" } }.
+bind {|_| guard lambda { x = "FOO"; x.send(m); x == "FOO" } }.
+bind {|_| Choice[m] }
+end.them
 
 # e.g. such_that([1, 2, 3], [4, 5, 6]) {|x, y| x * y == 8 } => [[2, 4]]
 def such_that(xs, ys, &block)
